@@ -33,3 +33,19 @@ def get_board_all():
     }
     board_list.append(data)
   return jsonify(board_list)
+
+@app.route('/board', methods=["POST"])
+def add_board():
+  username = request.form.get('username')
+  title = request.form.get('title')
+  content = request.form.get('content')
+
+  board = Board()
+  board.username = username
+  board.title = title
+  board.content = content
+
+  db.session.add(board)
+  db.session.commit()
+
+  return '글 저장 완료'
