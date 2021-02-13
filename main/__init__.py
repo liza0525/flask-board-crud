@@ -31,11 +31,22 @@ def create_app(config_folder=pjt_dir):
     db.init_app(app)
     api.init_app(app)
 
-    docs.register_existing_resources()
+    # register blueprints
 
-    for k, v in docs.spec._paths.items():
-        docs.spec._paths[k] = {
-            inner_key: inner_value for inner_key, inner_value in v.items() in inner_key != "options"
-        }
+    with app.app_context():
+        from main.controllers import board_bp
+        blueprints = [
+            board_bp
+        ]
+
+        for bp in blueprints:
+            app.register_blueprint(bp)
+
+        docs.register_existing_resources()
+
+        for k, v in docs.spec._paths.items():
+            docs.spec._paths[k] = {
+                inner_key: inner_value for inner_key, inner_value in v.items() if inner_key != 'options'
+            }
 
     return app
